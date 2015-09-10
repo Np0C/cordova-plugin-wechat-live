@@ -22,7 +22,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -292,7 +294,21 @@ public class Wechat extends CordovaPlugin {
                     break;
 
                 case TYPE_WX_SHARING_IMAGE:
-                    mediaObject = new WXImageObject(getBitmap(message.getJSONObject(KEY_ARG_MESSAGE_MEDIA), KEY_ARG_MESSAGE_MEDIA_IMAGE));
+                    try {
+                        // write image data to storage avoiding FAILED BINDER TRANSACTION
+                        File externalDir = Environment.getExternalStorageDirectory();
+                        File imageFile = new File(externalDir, "share_image.png");
+                        FileOutputStream fos = new FileOutputStream(imageFile);
+                        String imageUrl = message.getJSONObject(KEY_ARG_MESSAGE_MEDIA).getString(KEY_ARG_MESSAGE_MEDIA_IMAGE);
+                        Bitmap bmp = BitmapFactory.decodeStream(new URL(imageUrl).openStream());
+                        bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                        fos.close();
+                        bmp.recycle();
+
+                        mediaObject = new WXImageObject();
+                        ((WXImageObject) mediaObject).imagePath = imageFile.getAbsolutePath();
+
+                    } catch (Exception e) {}
                 case TYPE_WX_SHARING_MUSIC:
                     break;
 
