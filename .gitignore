@@ -16,3 +16,7 @@
 Session.vim
 .netrwhist
 *~
+
+/cordova-plugin-wechat-live.iml
+
+.idea
