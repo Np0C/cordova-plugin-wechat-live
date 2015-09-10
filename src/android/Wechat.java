@@ -27,6 +27,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import xu.li.cordova.wechat.Util;
+
 public class Wechat extends CordovaPlugin {
 
     public static final String TAG = "Cordova.Plugin.Wechat";
@@ -68,6 +70,8 @@ public class Wechat extends CordovaPlugin {
     public static final int SCENE_SESSION = 0;
     public static final int SCENE_TIMELINE = 1;
     public static final int SCENE_FAVORITE = 2;
+
+    public static final int THUMB_SIZE = 150;
 
     public static IWXAPI wxAPI;
     public static CallbackContext currentCallbackContext;
@@ -262,7 +266,11 @@ public class Wechat extends CordovaPlugin {
             // thumbnail
             Bitmap thumbnail = getBitmap(message, KEY_ARG_MESSAGE_THUMB);
             if (thumbnail != null) {
-                wxMediaMessage.setThumbImage(thumbnail);
+                // reduce thumb size
+                Bitmap thumbBmp = Bitmap.createScaledBitmap(thumbnail, THUMB_SIZE, THUMB_SIZE, true);
+                byte[] thumbBmpBytes = Util.bmpToByteArray(thumbBmp, true);
+                thumbnail.recycle();
+                wxMediaMessage.thumbData = thumbBmpBytes;
             }
 
             // check types
