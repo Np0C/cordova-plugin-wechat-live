@@ -266,10 +266,13 @@ public class Wechat extends CordovaPlugin {
             // thumbnail
             Bitmap thumbnail = getBitmap(message, KEY_ARG_MESSAGE_THUMB);
             if (thumbnail != null) {
-                // reduce thumb size
-                Bitmap thumbBmp = Bitmap.createScaledBitmap(thumbnail, THUMB_SIZE, THUMB_SIZE, true);
-                byte[] thumbBmpBytes = Util.bmpToByteArray(thumbBmp, true);
-                Log.e(TAG, "thumb bmp bytes " + thumbBmpBytes.length);
+                byte[] thumbBmpBytes = Util.bmpToByteArray(thumbnail, true);
+                Log.e(TAG, "[Origin]thumb bmp bytes " + thumbBmpBytes.length);
+                if(thumbBmpBytes.length > 30000) {
+                    Bitmap thumbBmp = Bitmap.createScaledBitmap(thumbnail, THUMB_SIZE, THUMB_SIZE, true);
+                    thumbBmpBytes = Util.bmpToByteArray(thumbBmp, true);
+                    Log.e(TAG, "[Reduced]thumb bmp bytes " + thumbBmpBytes.length);
+                }
                 thumbnail.recycle();
                 wxMediaMessage.thumbData = thumbBmpBytes;
             }
