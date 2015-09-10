@@ -143,7 +143,7 @@ public class Wechat extends CordovaPlugin {
         }
 
         // run in background
-        cordova.getActivity().runOnUiThread(new Runnable() {
+        cordova.getThreadPool().execute(new Runnable() {
 
             @Override
             public void run() {
