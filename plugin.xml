@@ -115,7 +115,5 @@
       <source-file src="src/android/Wechat.java" target-dir="src/xu/li/cordova/wechat" />
       <source-file src="src/android/Util.java" target-dir="src/xu/li/cordova/wechat" />
       <source-file src="src/android/libammsdk.jar" target-dir="libs" />
-        <source-file src="src/android/armeabi/libdbpush_V2_3.so" target-dir="libs/armeabi/libdbpush_V2_3.so" />
-        <source-file src="src/android/mips/libdbpush_V2_3.so" target-dir="libs/mips/libdbpush_V2_3.so" />
   </platform>
 </plugin>
