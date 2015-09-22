@@ -54,6 +54,7 @@ public class Wechat extends CordovaPlugin {
     public static final String KEY_ARG_MESSAGE_TITLE = "title";
     public static final String KEY_ARG_MESSAGE_DESCRIPTION = "description";
     public static final String KEY_ARG_MESSAGE_THUMB = "thumb";
+    public static final String KEY_ARG_MESSAGE_ERROR_IMAGE = "errorImage";
     public static final String KEY_ARG_MESSAGE_MEDIA = "media";
     public static final String KEY_ARG_MESSAGE_MEDIA_TYPE = "type";
     public static final String KEY_ARG_MESSAGE_MEDIA_WEBPAGEURL = "webpageUrl";
@@ -267,6 +268,9 @@ public class Wechat extends CordovaPlugin {
 
             // thumbnail
             Bitmap thumbnail = getBitmap(message, KEY_ARG_MESSAGE_THUMB);
+            if(null == thumbnail) {
+                thumbnail = getBitmap(message, KEY_ARG_MESSAGE_ERROR_IMAGE);
+            }
             if (thumbnail != null) {
                 byte[] thumbBmpBytes = Util.bmpToByteArray(thumbnail, false);
                 Log.e(TAG, "[Origin]thumb bmp bytes " + thumbBmpBytes.length);
@@ -301,13 +305,14 @@ public class Wechat extends CordovaPlugin {
                         FileOutputStream fos = new FileOutputStream(imageFile);
                         String imageUrl = message.getJSONObject(KEY_ARG_MESSAGE_MEDIA).getString(KEY_ARG_MESSAGE_MEDIA_IMAGE);
                         Bitmap bmp = BitmapFactory.decodeStream(new URL(imageUrl).openStream());
+                        if (null == bmp) {
+                            bmp = BitmapFactory.decodeStream(new URL(message.getString(KEY_ARG_MESSAGE_ERROR_IMAGE)).openStream());
+                        }
                         bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
                         fos.close();
                         bmp.recycle();
-
                         mediaObject = new WXImageObject();
                         ((WXImageObject) mediaObject).imagePath = imageFile.getAbsolutePath();
-
                     } catch (Exception e) {}
                 case TYPE_WX_SHARING_MUSIC:
                     break;
@@ -333,15 +338,12 @@ public class Wechat extends CordovaPlugin {
 
     protected IWXAPI getWXAPI(boolean register) {
         String appId = getAppId();
-
         if (wxAPI == null) {
             wxAPI = WXAPIFactory.createWXAPI(webView.getContext(), appId, true);
         }
-
         if (register) {
             wxAPI.registerApp(appId);
         }
-
         return wxAPI;
     }
 
@@ -375,7 +377,6 @@ public class Wechat extends CordovaPlugin {
                     is = new FileInputStream(url);
                 }
             }
-
             bmp = BitmapFactory.decodeStream(is);
             is.close();
         } catch (Exception e) {
@@ -386,7 +387,6 @@ public class Wechat extends CordovaPlugin {
                 conn.disconnect();
             }
         }
-
         return bmp;
     }
 
